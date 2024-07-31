@@ -39,5 +39,28 @@ namespace MathFunctionApp
 
             return response;
         }
+        [Function("AddTwoNumbersFunction")]
+        public async Task<HttpResponseData> AddTwoNumbers([HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequestData req)
+        {
+            _logger.LogInformation("C# HTTP trigger function processed a request.");
+
+            // Get the 'number1' and 'number2' query parameters
+            var query = System.Web.HttpUtility.ParseQueryString(req.Url.Query);
+            if (!int.TryParse(query["number1"], out int number1) || !int.TryParse(query["number2"], out int number2))
+            {
+                var badResponse = req.CreateResponse(System.Net.HttpStatusCode.BadRequest);
+                await badResponse.WriteStringAsync("Please pass valid numbers in the query string as '?number1={value}&number2={value}'");
+                return badResponse;
+            }
+
+            // Add the two numbers
+            int result = number1 + number2;
+
+            // Create response
+            var response = req.CreateResponse(System.Net.HttpStatusCode.OK);
+            await response.WriteStringAsync(result.ToString());
+
+            return response;
+        }
     }
 }
